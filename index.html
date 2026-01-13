@@ -1,202 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <title>Zara | Datacenter</title>
+  <title>Zara | Datacenter Hub</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <style>
+    :root {
+      --primary-color: #20c0e4; /* Your Brand Blue */
+      --accent-color: #d50d0d;
+      --background: #000000;
+    }
+
     body {
       margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: #000;
+      background: var(--background);
       overflow: hidden;
-      color: #fff;
-      text-align: center;
-      height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      color: white;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      position: relative;
-    }
-
-    h1 {
-      font-size: 3rem;
-      animation: fadeSlideIn 1.5s ease-out forwards;
-      margin-bottom: 10px;
-    }
-
-    h1 a {
-      color: #fff;
-      text-decoration: none;
-      transition: all 0.3s;
-    }
-
-    h1 a:hover {
-      color: #20c0e4;
-      text-shadow: 0 0 10px #20c0e4;
-    }
-
-    p {
-      font-size: 1.2rem;
-      color: #bbbbbb;
-      margin: 10px 0 30px;
-      animation: fadeSlideIn 2s ease-out forwards;
-    }
-
-    z {
-      color: #d50d0d;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-      transition: var(--transition);
-    }
-
-    footer {
-      position: absolute;
-      bottom: 20px;
-      width: 100%;
-      color: #888;
-      font-size: 0.9rem;
-      animation: fadeSlideIn 3s ease-out forwards;
-    }
-
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
       height: 100vh;
-      z-index: -1;
     }
 
-    @keyframes fadeSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* CINEMATIC BACKGROUND */
+    #bg-layer {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #0a1b24 0%, #000000 100%);
+      z-index: 0;
     }
 
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1.8rem !important;
-        padding: 0 16px;
-      }
+    canvas { position: fixed; top: 0; left: 0; z-index: 1; }
 
-      p {
-        font-size: 1rem;
-        padding: 0 16px;
-      }
+    /* SYSTEM HUD */
+    .system-hud {
+      position: absolute; top: 30px; left: 30px;
+      font-family: monospace; font-size: 10px; color: var(--primary-color);
+      z-index: 10; letter-spacing: 2px; line-height: 1.8;
+      border-left: 2px solid var(--primary-color); padding-left: 15px;
+      pointer-events: none;
+    }
 
-      footer {
-        font-size: 0.8rem;
-        padding: 0 16px;
-      }
+    /* CENTERED CONTENT */
+    .content {
+      position: relative; z-index: 10;
+      max-width: 650px; width: 85%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      padding: 60px 40px; border-radius: 40px;
+      border: 1px solid rgba(32, 192, 228, 0.3);
+      text-align: center;
+      box-shadow: 0 0 80px rgba(32, 192, 228, 0.1);
+      animation: emerge 1.5s ease-out;
+    }
+
+    h1 { font-size: clamp(2.5rem, 8vw, 3.2rem); margin-bottom: 20px; font-weight: 800; line-height: 1; }
+    h1 z { color: var(--accent-color); }
+    h1 a { color: white; text-decoration: none; transition: 0.3s; }
+    h1 a:hover { color: var(--primary-color); }
+
+    .tagline { color: white; font-weight: bold; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; text-transform: uppercase; font-size: 0.9rem; }
+    .msme { font-size: 0.75rem; color: #888; margin-bottom: 30px; line-height: 1.6; }
+    v{
+color: greenyellow;
+}
+
+    /* REDIRECT UI */
+    .status-box { margin-top: 40px; }
+    .status-text { font-size: 10px; color: var(--primary-color); text-transform: uppercase; margin-bottom: 10px; font-weight: bold; letter-spacing: 2px; }
+    .progress-bar { width: 100%; height: 2px; background: rgba(255,255,255,0.05); overflow: hidden; border-radius: 2px; }
+    .progress-fill { width: 0%; height: 100%; background: var(--primary-color); transition: width 10s linear; box-shadow: 0 0 15px var(--primary-color); }
+
+    footer { position: fixed; bottom: 30px; width: 100%; text-align: center; color: #444; font-size: 9px; z-index : 10; letter-spacing: 3px; }
+    footer a { color: #666  ; text-decoration: none; margin: 0 15px; transition: 0.3s; }
+    footer a:hover { color: var(--primary-color); }
+    footer x {
+  color: greenyellow;}
+
+
+    @keyframes emerge {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
 
 <body>
-  <canvas id="particle-canvas"></canvas>
+  <div id="bg-layer"></div>
+  
+  <div class="system-hud">
+    >> SYSTEM_ACTIVE:<v>TRUE</v><br>
+    >> LATENCY:<v><span id="latency">12</span>ms<br></v>
+    >> DATA_STREAM:<v>#T1600<br></v>
+    >> NODE_ID: <v>ZARA_DC</v>
+  </div>
 
-  <h1>Welcome to <z><a href="https://zaradatacenter.org">Zara Datacenter</a></z>
-  </h1>
-  <p>Building Future.</p>
+  <canvas id="weave"></canvas>
 
-  <footer>2025 <a href="https://zara.webistzu.com">Zara Datacenter</a> |<a href="https://webistzu.com">  Webistzu</a> | <a href="https://jaiprakashmd.com"> Jai Prakash</a></footer>
+  <div class="content">
+    <h1>Welcome to <br> <z><a href="about.html">Zara Datacenter</a></z></h1>
+    
+    <div class="msme">
+      GOVERNMENT REGISTERED MSME<br>
+      <a href="https://udyamregistration.gov.in/verifyudyambarcode.aspx?verifyudrn=mtgoPzxnZ99xXAyhSj/azl5jHks0izdXHBY6l1UvKcI=" style="color:var(--primary-color); text-decoration:none;">
+        (UDYAM-TN-02-0415352)
+      </a>
+      <br>GSTIN : 33JBMPD1719M1ZF
+    </div>
 
-  <script>
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let particlesArray;
+    <p><span class="tagline"><v>The Head Node.</v></span><br><br>
+    A unified core where all our ventures connect, scale, and evolve.</p>
+    
+    <p style="font-size: 0.85rem; color: #999;">Owned by - 
+      <a href="https://jaiprakashmd.com" style="color:var(--primary-color); text-decoration:none; font-weight:600;">Jai Prakash</a> | 
+      <a href="https://yashvinthan.dev" style="color:var(--primary-color); text-decoration:none; font-weight:600;">Yashvinthan</a>
+    </p>
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    <div class="status-box">
+      <div class="status-text" id="msg">Establishing Connection...</div>
+      <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+    </div>
+  </div>
+
+  <footer>
+   <x> &copy; 2026 ZARA DATACENTER </x>|<x><a href="https://webistzu.com" style="color:var(--primary-color); text-decoration:none"> WEBISTZU</a></x>|<x><a href="https://theslowwman.space" style="color:var(--primary-color); text-decoration:none" >SLOWWMAN</a></x>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script id="vertexShader" type="x-shader/x-vertex">
+    uniform float uTime;
+    varying vec2 vUv;
+    varying float vZ;
+    void main() {
+      vUv = uv;
+      vec3 pos = position;
+      // Elegant brand-colored silk wave
+      float wave = sin(pos.x * 0.2 + uTime * 0.5) * cos(pos.y * 0.2 + uTime * 0.4);
+      pos.z += wave * 5.0;
+      vZ = pos.z;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+  </script>
 
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 1 - 0.5;
-        this.speedY = Math.random() * 1 - 0.5;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
-        if (this.y < 0 || this.y > canvas.height) this.speedY = -this.speedY;
-      }
-      draw() {
-        ctx.fillStyle = '#20c0e4';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
+  <script id="fragmentShader" type="x-shader/x-fragment">
+    uniform float uTime;
+    varying vec2 vUv;
+    varying float vZ;
+    void main() {
+      // Matrix-style grid in Brand Blue
+      float line = step(0.97, fract(vUv.x * 25.0)) + step(0.97, fract(vUv.y * 15.0 + uTime * 0.3));
+      vec3 brandBlue = vec3(0.125, 0.753, 0.894); // #20c0e4
+      float intensity = smoothstep(-5.0, 5.0, vZ);
+      gl_FragColor = vec4(brandBlue * intensity, line * 0.5 + (intensity * 0.2));
     }
-
-    function initParticles() {
-      particlesArray = [];
-      const numberOfParticles = (canvas.width * canvas.height) / 9000;
-      for (let i = 0; i < numberOfParticles; i++) {
-        particlesArray.push(new Particle());
-      }
-    }
-
-    function connectParticles() {
-      for (let a = 0; a < particlesArray.length; a++) {
-        for (let b = a; b < particlesArray.length; b++) {
-          let dx = particlesArray[a].x - particlesArray[b].x;
-          let dy = particlesArray[a].y - particlesArray[b].y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
-          if (distance < 100) {
-            ctx.strokeStyle = 'rgba(32, 192, 228, ' + (1 - distance / 100) + ')';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particlesArray.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      connectParticles();
-      requestAnimationFrame(animateParticles);
-    }
-
-    initParticles();
-    animateParticles();
   </script>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(registration => {
-          console.log('Service Worker registered with scope:', registration.scope);
-        })
-        .catch(error => {
-          console.log('Service Worker registration failed:', error);
-        });
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('weave'), antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // MESH
+    const geo = new THREE.PlaneGeometry(120, 80, 120, 120);
+    const mat = new THREE.ShaderMaterial({
+      vertexShader: document.getElementById('vertexShader').textContent,
+      fragmentShader: document.getElementById('fragmentShader').textContent,
+      transparent: true, side: THREE.DoubleSide,
+      uniforms: { uTime: { value: 0 } }
+    });
+
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.rotation.x = -Math.PI / 2.3;
+    scene.add(mesh);
+    camera.position.set(0, 20, 45);
+
+    // ANIMATION
+    function animate(t) {
+      mat.uniforms.uTime.value = t * 0.001;
+      if(Math.random() > 0.95) document.getElementById('latency').innerText = (6 + Math.floor(Math.random() * 5));
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
     }
+    animate();
+
+    // INTERFACE LOGIC
+    window.addEventListener('load', () => {
+      document.getElementById('fill').style.width = '100%';
+      const msg = document.getElementById('msg');
+      setTimeout(() => msg.innerText = "Synchronizing Node...", 3000);
+      setTimeout(() => msg.innerText = "Accessing Head Node Core...", 7000);
+      setTimeout(() => msg.innerText = "Syncing to the core...", 11000);
+      setTimeout(() => msg.innerText = "access accepted...", 15000);
+      setTimeout(() => msg.innerText = "Got you...", 18500);
+      setTimeout(() => window.location.href = 'about.html', 20000);
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
   </script>
 </body>
-
-
 </html>
